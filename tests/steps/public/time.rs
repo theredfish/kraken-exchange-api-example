@@ -1,48 +1,12 @@
+use crate::domain::time::*;
+use crate::support::api::*;
 use chrono::DateTime;
-use cucumber_rust::{async_trait, given, then, when, World, WorldInit};
-use reqwest::{self, StatusCode};
-use serde::Deserialize;
-use serde_json::Value;
-use std::{cell::RefCell, convert::Infallible};
+use cucumber_rust::{then, when};
+use reqwest;
 use url::Url;
 
-#[derive(Debug, Deserialize)]
-struct Time {
-    unixtime: usize,
-    rfc1123: String,
-}
-
-#[derive(Debug, Deserialize)]
-struct TimeResponse {
-    error: Vec<String>,
-    result: Time,
-}
-
-#[derive(Debug, Default)]
-struct HttpResponse {
-    status: u16,
-    data: String,
-}
-
-#[derive(WorldInit, Debug)]
-pub struct TestContext {
-    response: HttpResponse,
-}
-
-#[async_trait(?Send)]
-impl World for TestContext {
-    type Error = Infallible;
-
-    async fn new() -> Result<Self, Infallible> {
-        Ok(Self {
-            response: HttpResponse::default(),
-        })
-    }
-}
-
-// TODO : param url
 #[when("I access the server time from /0/public/Time")]
-async fn get_http_request(test_ctx: &mut TestContext) {
+async fn get_http_request(test_ctx: &mut ApiContext) {
     let endpoint = String::from("/0/public/Time");
     let api = String::from("https://api.kraken.com");
     let endpoint_url = format!("{}{}", api, endpoint);
@@ -69,14 +33,14 @@ async fn get_http_request(test_ctx: &mut TestContext) {
 
 // TODO : parametrize the status code and add this in support
 #[then("the http status code should be 200")]
-fn check_status_ok(test_ctx: &mut TestContext) {
+fn check_status_ok(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     assert_eq!(http_response.status, 200, "Status code should be 200.");
 }
 
 #[then("the response body does not contain any error")]
-fn check_error_response(test_ctx: &mut TestContext) {
+fn check_error_response(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     let time_response: TimeResponse =
@@ -89,7 +53,7 @@ fn check_error_response(test_ctx: &mut TestContext) {
 }
 
 #[then("the response body contains a valid response format")]
-fn check_body_format(test_ctx: &mut TestContext) {
+fn check_body_format(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     let time_response: TimeResponse =
@@ -108,10 +72,4 @@ fn check_body_format(test_ctx: &mut TestContext) {
         time_response.result.unixtime as i64,
         "The parsed rfc1123 field does not give the same timestamp as the unixtime field"
     );
-}
-
-#[tokio::main]
-async fn main() {
-    let runner = TestContext::init(&["./tests/features/"]);
-    runner.run_and_exit().await;
 }
