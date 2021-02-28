@@ -1,0 +1,6 @@
+version: "3"
+services:
+  bdd_tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
