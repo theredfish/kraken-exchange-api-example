@@ -1,3 +1,6 @@
+//! The entry point of BDD tests. Initializes the configuration, the test
+//! context, and the test runners.
+
 use lazy_static;
 
 mod config;
