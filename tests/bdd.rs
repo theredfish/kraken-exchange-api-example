@@ -1,3 +1,6 @@
+use lazy_static;
+
+mod config;
 mod domain;
 mod steps;
 mod support;
@@ -6,6 +9,10 @@ mod support;
 async fn main() {
     use cucumber_rust::WorldInit;
     use support::api::ApiContext;
+
+    // Make sure the config is initialized at the beginning instead on the
+    // first call.
+    lazy_static::initialize(&config::CONFIG);
 
     ApiContext::init(&["./tests/features"]).run_and_exit().await;
 }

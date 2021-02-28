@@ -2,24 +2,27 @@ use crate::domain::time::*;
 use crate::support::api::*;
 use chrono::DateTime;
 use cucumber_rust::{then, when};
-use reqwest;
 use url::Url;
 
 #[when("I access the server time from /0/public/Time")]
 async fn get_http_request(test_ctx: &mut ApiContext) {
     let endpoint = String::from("/0/public/Time");
-    let api = String::from("https://api.kraken.com");
-    let endpoint_url = format!("{}{}", api, endpoint);
+    let endpoint_url = format!("{}{}", test_ctx.api_base_url, endpoint);
 
     Url::parse(&endpoint_url).expect(&format!(
         "Invalid URL format for the endpoint {}",
         endpoint_url
     ));
 
-    let res = reqwest::get(&endpoint_url).await.expect(&format!(
-        "The http request builder is not valid for the endpoint {}",
-        endpoint_url
-    ));
+    let res = test_ctx
+        .http_client
+        .get(&endpoint_url)
+        .send()
+        .await
+        .expect(&format!(
+            "The http request builder is not valid for the endpoint {}",
+            endpoint_url
+        ));
 
     let status = res.status().as_u16();
 
@@ -33,14 +36,14 @@ async fn get_http_request(test_ctx: &mut ApiContext) {
 
 // TODO : parametrize the status code and add this in support
 #[then("the http status code should be 200")]
-fn check_status_ok(test_ctx: &mut ApiContext) {
+async fn check_status_ok(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     assert_eq!(http_response.status, 200, "Status code should be 200.");
 }
 
 #[then("the response body does not contain any error")]
-fn check_error_response(test_ctx: &mut ApiContext) {
+async fn check_error_response(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     let time_response: TimeResponse =
@@ -53,7 +56,7 @@ fn check_error_response(test_ctx: &mut ApiContext) {
 }
 
 #[then("the response body contains a valid response format")]
-fn check_body_format(test_ctx: &mut ApiContext) {
+async fn check_body_format(test_ctx: &mut ApiContext) {
     let http_response = &test_ctx.response;
 
     let time_response: TimeResponse =
