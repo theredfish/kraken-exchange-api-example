@@ -1,0 +1,34 @@
+# It may be useful to test whether BDD tests work on different environments.
+# Developers might run the tests on different OS, but it can also help find errors
+# on different OS. For example, Windows comes with its own SSL dependencies while
+# on Linux we use OpenSSL.
+os:
+  - linux
+  - osx
+  - windows
+language: rust
+cache: cargo
+
+# Run the script on stable, beta and nightly channels. We can therefore
+# detect any errors for future releases. This can help us get to know better
+# the code updates we will need to make.
+rust:
+  - stable
+  - beta
+  - nightly
+
+matrix:
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+
+before_script:
+  - rustup component add clippy
+
+script:
+  # enforce syntax : great for a team
+  - cargo fmt --all -- --check
+  # fail when encountering warnings
+  - cargo clippy -- -D warnings
+  # run tests (bdd tests here)
+  - cargo test
