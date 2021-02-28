@@ -4,9 +4,8 @@ use chrono::DateTime;
 use cucumber_rust::{then, when};
 use url::Url;
 
-#[when("I access the server time from /0/public/Time")]
-async fn access_time_endpoint(test_ctx: &mut ApiContext) {
-    let endpoint = String::from("/0/public/Time");
+#[when(regex = r#"^I access the server time from "(.*)"$"#)]
+async fn access_time_endpoint(test_ctx: &mut ApiContext, endpoint: String) {
     let endpoint_url = format!("{}{}", test_ctx.api_base_url, endpoint);
 
     Url::parse(&endpoint_url).expect(&format!(
@@ -35,11 +34,14 @@ async fn access_time_endpoint(test_ctx: &mut ApiContext) {
 }
 
 // TODO : parametrize the status code and add this in support
-#[then("the http status code should be 200")]
-async fn check_status_ok(test_ctx: &mut ApiContext) {
+#[then(regex = r#"^the http status code should be "(.*)"$"#)]
+async fn check_status_ok(test_ctx: &mut ApiContext, status_code: u16) {
     let http_response = &test_ctx.response;
 
-    assert_eq!(http_response.status, 200, "Status code should be 200.");
+    assert_eq!(
+        http_response.status, status_code,
+        "Status code should be 200."
+    );
 }
 
 #[then("the response body does not contain any error")]

@@ -1,8 +1,8 @@
 Feature: Time feature
 
     Scenario: Retrieve the server time
-        When I access the server time from /0/public/Time
-        Then the http status code should be 200
+        When I access the server time from "/0/public/Time"
+        Then the http status code should be "200"
         And the response body contains a valid response format
         And the response body does not contain any error
 
