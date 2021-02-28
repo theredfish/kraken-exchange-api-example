@@ -5,7 +5,7 @@ use cucumber_rust::{then, when};
 use url::Url;
 
 #[when("I access the server time from /0/public/Time")]
-async fn get_http_request(test_ctx: &mut ApiContext) {
+async fn access_time_endpoint(test_ctx: &mut ApiContext) {
     let endpoint = String::from("/0/public/Time");
     let endpoint_url = format!("{}{}", test_ctx.api_base_url, endpoint);
 
