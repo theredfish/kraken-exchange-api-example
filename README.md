@@ -10,3 +10,7 @@
 
 - `cp .env.example .env` and replace the values with yours.
 - `cargo test --test cucumber`
+
+## Docker
+
+- `docker-compose up --build`
