@@ -12,6 +12,6 @@ pub struct Time {
 /// A structure that represents the http response returned by the endpoint.
 #[derive(Debug, Deserialize)]
 pub struct TimeResponse {
-    pub error: Vec<String>,
+    pub error: Vec<::serde_json::Value>,
     pub result: Time,
 }

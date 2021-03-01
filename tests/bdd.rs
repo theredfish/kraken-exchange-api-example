@@ -1,21 +1,26 @@
 //! The entry point of BDD tests. Initializes the configuration, the test
 //! context, and the test runners.
 
-use lazy_static;
+use stonk::config::Config;
 
-mod config;
-mod domain;
+mod context;
 mod steps;
-mod support;
+
+lazy_static::lazy_static! {
+    pub static ref CONFIG: Config = Config::new();
+}
 
 #[tokio::main]
 async fn main() {
+    use context::ApiContext;
     use cucumber_rust::WorldInit;
-    use support::api::ApiContext;
 
-    // Make sure the config is initialized at the beginning instead on the
-    // first call.
-    lazy_static::initialize(&config::CONFIG);
+    // Run all scenarios even if previous failed. It allows us to get a full
+    // report.
+    ApiContext::init(&["./tests/features"])
+        .enable_capture(true)
+        .run()
+        .await;
 
-    ApiContext::init(&["./tests/features"]).run_and_exit().await;
+    println!("Generated reports : TODO");
 }
