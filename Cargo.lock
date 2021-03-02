@@ -1167,6 +1167,7 @@ dependencies = [
  "lazy_static",
  "reqwest",
  "serde",
+ "serde_derive",
  "serde_json",
  "tokio",
  "url",

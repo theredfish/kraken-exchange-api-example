@@ -1,4 +1,4 @@
-use crate::config::CONFIG;
+use crate::CONFIG;
 use cucumber_rust::{async_trait, World, WorldInit};
 use reqwest::Client;
 use std::convert::Infallible;

@@ -1,10 +1,10 @@
 Feature: Time feature
 
     Scenario: Retrieve the server time
-        When I access the server time from "/0/public/Time"
-        Then the http status code should be "200"
-        And the response body contains a valid response format
-        And the response body does not contain any error
+        When User make GET http request to "/0/public/Time"
+        Then http response status code is "200"
+        And the Time response body contains a valid response format
+        And the Time response body does not contain any error
 
     Scenario: Example of a not implemented scenario to show in logs
         Given a not yet implemented scenario
