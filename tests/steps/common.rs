@@ -5,7 +5,7 @@ use url::Url;
 #[when(regex = r#"^User make GET http request to "(.*)"$"#)]
 async fn http_get(test_ctx: &mut ApiContext, endpoint: String) {
     let endpoint_url = format!("{}{}", test_ctx.api_base_url, endpoint);
-    println!("Endpoint is : {}", endpoint_url);
+
     Url::parse(&endpoint_url).expect(&format!(
         "Invalid URL format for the endpoint {}",
         endpoint_url

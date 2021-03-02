@@ -14,6 +14,8 @@ async fn asset_pair_check_body_format(test_ctx: &mut ApiContext) {
         asset_pair.altname.is_some(),
         "Failed to deserialize the asset pair."
     );
+
+    println!("AssetPair : {:#?}", asset_pair);
 }
 
 #[then("the AssetPairs response body does not contain any error")]

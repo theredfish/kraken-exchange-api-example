@@ -16,11 +16,7 @@ async fn main() {
     use cucumber_rust::WorldInit;
 
     // Run all scenarios even if previous failed. It allows us to get a full
-    // report.
-    ApiContext::init(&["./tests/features"])
-        .enable_capture(true)
-        .run()
-        .await;
-
-    println!("Generated reports : TODO");
+    // report. The cli option allow us to pass options like --debug.
+    // Usage example : cargo test --test bdd -- --debug
+    ApiContext::init(&["./tests/features"]).cli().run().await;
 }

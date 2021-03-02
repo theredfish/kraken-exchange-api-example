@@ -32,7 +32,10 @@ script:
   - cargo fmt --all -- --check
   # Fail when encountering warnings
   - cargo clippy -- -D warnings
-  # Check tests compilation : this will avoid to run tests over the real API.
+  - cargo build
+  # unit tests of the library
+  - cargo test --lib
+  # Check BDD tests compilation : this will avoid to run tests over the real API.
   # it's just for continuous integration. To run tests it's better to configure
   # specific jobs with a cron / trigger.
   - cargo test --no-run

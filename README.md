@@ -9,7 +9,9 @@
 ## Quickstart
 
 - `cp .env.example .env` and replace the values with yours.
-- `cargo test`
+- `cargo test --test bdd -- --debug`
+
+`debug` will print reports asked in the subject.
 
 ## Docker
 
