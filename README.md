@@ -32,9 +32,10 @@ Some notes before a full redaction
 - Async / await : reduce time
 - Reqwest : You do not have to wrap the Client it in an Rc or Arc to reuse it, because it already uses an Arc internally.
 
-## Useful tools
+## Tools and resources
 
 - [Turn json into Rust data structures deriving from serde](https://transform.tools/json-to-rust-serde)
+- [API security based on this draft repo](https://git.cryptid.cc/lost/kraken_api)
 
 ## Notes
 
