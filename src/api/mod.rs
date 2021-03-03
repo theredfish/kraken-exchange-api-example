@@ -60,7 +60,7 @@ impl Api {
         }
 
         let postdata = self.url_encode_hashmap(&data);
-        let input = self.inner_sign(path, &postdata, nonce.to_string())?;
+        let input = self.inner_sign(path, &postdata, nonce.to_string());
         let api_sign = self.sign(input)?;
 
         let mut headers = HeaderMap::new();
@@ -99,14 +99,12 @@ impl Api {
         Ok(res)
     }
 
-    fn inner_sign(&self, path: &str, postdata: &str, nonce: String) -> Result<Vec<u8>, ApiError> {
+    fn inner_sign(&self, path: &str, postdata: &str, nonce: String) -> Vec<u8> {
         let input = [nonce, postdata.to_string()].concat();
         let bytes = input.as_bytes();
-
         let hashed: [u8; 32] = Sha256::digest(bytes).into();
-        let res = [path.as_bytes(), &hashed].concat();
 
-        Ok(res)
+        [path.as_bytes(), &hashed].concat()
     }
 
     // See : https://github.com/hugues31/coinnect/blob/master/src/helpers/mod.rs#L14
