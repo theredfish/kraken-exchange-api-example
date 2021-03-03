@@ -13,11 +13,6 @@ use url::Url;
 mod errors;
 use errors::ApiError;
 
-#[derive(Serialize)]
-pub struct FormData {
-    data: HashMap<String, String>,
-}
-
 // API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
 // See : https://www.kraken.com/features/api#general-usage
 pub struct Api {
@@ -59,6 +54,7 @@ impl Api {
         let nonce = self.nonce()?.to_string();
 
         data.insert("nonce".to_string(), nonce.to_string());
+
         if let Some(ref otp) = self.totp {
             data.insert("otp".to_string(), otp.to_string());
         }
