@@ -1,12 +1,11 @@
 use crate::CONFIG;
 use cucumber_rust::{async_trait, World, WorldInit};
-use reqwest::Client;
+use reqwest::{Client, Response};
 use std::convert::Infallible;
+use std::convert::TryFrom;
+use stonk::api::Api;
 
-/// A http response structure to share between steps of a scenario. Generally
-/// the first step (Given) will initialize the http request and handle the
-/// the response. The subsequent steps will have access to this structure
-/// through a mutable context.
+/// A http response structure to share between steps of a scenario.
 #[derive(Debug, Default)]
 pub struct HttpResponse {
     pub status: u16,
@@ -14,10 +13,9 @@ pub struct HttpResponse {
 }
 
 /// A mutable context for BDD steps in the case of REST API testing.
-#[derive(WorldInit, Debug)]
+#[derive(WorldInit)]
 pub struct ApiContext {
-    pub api_base_url: String,
-    pub http_client: Client,
+    pub api: Api,
     pub response: HttpResponse,
 }
 
@@ -27,8 +25,12 @@ impl World for ApiContext {
 
     async fn new() -> Result<Self, Infallible> {
         Ok(Self {
-            api_base_url: String::from(&CONFIG.api_base_url),
-            http_client: Client::new(),
+            api: Api::new(
+                CONFIG.api_base_url.to_owned(),
+                CONFIG.api_key.to_owned(),
+                CONFIG.api_secret.to_owned(),
+                CONFIG.totp_pwd.to_owned(),
+            ),
             response: HttpResponse::default(),
         })
     }

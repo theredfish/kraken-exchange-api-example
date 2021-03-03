@@ -1,5 +1,4 @@
 //! The domain definition for Time.
-
 use serde::Deserialize;
 
 /// A structure that represents the server time.

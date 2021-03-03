@@ -12,6 +12,9 @@ use dotenv::dotenv;
 #[derive(Clone, Deserialize, Debug, PartialEq)]
 pub struct Config {
     pub api_base_url: String,
+    pub api_key: String,
+    pub api_secret: String,
+    pub totp_pwd: Option<String>,
 }
 
 impl Config {
@@ -21,7 +24,7 @@ impl Config {
 
         match envy::from_env::<Config>() {
             Ok(config) => config,
-            Err(error) => panic!("Configuration Error: {:#?}", error),
+            Err(error) => panic!("Configuration Error: {}", error),
         }
     }
 }

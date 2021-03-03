@@ -1,34 +1,13 @@
+use std::collections::HashMap;
+
 use crate::context::{ApiContext, HttpResponse};
 use cucumber_rust::{then, when};
-use url::Url;
+use stonk::api::Api;
 
 #[when(regex = r#"^User make GET http request to "(.*)"$"#)]
 async fn http_get(test_ctx: &mut ApiContext, endpoint: String) {
-    let endpoint_url = format!("{}{}", test_ctx.api_base_url, endpoint);
-
-    Url::parse(&endpoint_url).expect(&format!(
-        "Invalid URL format for the endpoint {}",
-        endpoint_url
-    ));
-
-    let res = test_ctx
-        .http_client
-        .get(&endpoint_url)
-        .send()
-        .await
-        .expect(&format!(
-            "The http request builder is not valid for the endpoint {}",
-            endpoint_url
-        ));
-
-    let status = res.status().as_u16();
-
-    let data = res.text().await.expect(&format!(
-        "Cannot retrieve http response body for the endpoint {}",
-        endpoint
-    ));
-
-    test_ctx.response = HttpResponse { status, data };
+    let api = &test_ctx.api;
+    test_ctx.response = handle_http_request(api, endpoint, HashMap::new()).await;
 }
 
 #[then(regex = r#"^http response status code is "(.*)"$"#)]
@@ -39,4 +18,45 @@ async fn http_response_ok(test_ctx: &mut ApiContext, status_code: u16) {
         http_response.status, status_code,
         "Status code should be 200."
     );
+}
+
+async fn handle_http_request(
+    api: &Api,
+    endpoint: String,
+    data: HashMap<String, String>,
+) -> HttpResponse {
+    if endpoint.contains("private") {
+        let res = api.private_call(&endpoint, data).await.expect(&format!(
+            "Error during http request to private endpoint {}",
+            endpoint
+        ));
+
+        let status = res.status().as_u16();
+
+        let data = res.text().await.expect(&format!(
+            "Cannot retrieve http response body for the endpoint {}",
+            endpoint
+        ));
+
+        return HttpResponse { status, data };
+    } else if endpoint.contains("public") {
+        let res = api.public_call(&endpoint).await.expect(&format!(
+            "Error during http request to public endpoint {}",
+            endpoint
+        ));
+
+        let status = res.status().as_u16();
+
+        let data = res.text().await.expect(&format!(
+            "Cannot retrieve http response body for the endpoint {}",
+            endpoint
+        ));
+
+        return HttpResponse { status, data };
+    } else {
+        panic!(format!(
+            "Private or public endpoint expected. Found : {}",
+            endpoint
+        ));
+    }
 }
