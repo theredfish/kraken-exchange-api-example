@@ -1,8 +1,6 @@
 use crate::CONFIG;
 use cucumber_rust::{async_trait, World, WorldInit};
-use reqwest::{Client, Response};
 use std::convert::Infallible;
-use std::convert::TryFrom;
 use stonk::api::Api;
 
 /// A http response structure to share between steps of a scenario.
