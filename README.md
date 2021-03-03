@@ -35,7 +35,7 @@ Some notes before a full redaction
 ## Tools and resources
 
 - [Turn json into Rust data structures deriving from serde](https://transform.tools/json-to-rust-serde)
-- [API security based on this draft repo](https://git.cryptid.cc/lost/kraken_api)
+- [Coinnect repo](https://github.com/hugues31/coinnect/blob/master/src/kraken/api.rs) : I studied their API and crypto functions.
 
 ## Notes
 

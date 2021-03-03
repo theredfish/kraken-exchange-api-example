@@ -13,7 +13,6 @@ harness = false
 [dev-dependencies]
 cucumber_rust = { version = "0.8.4", features = ["macros"] }
 tokio = { version = "1.1.1", features = ["macros", "rt-multi-thread"] }
-reqwest = "0.11.1"
 lazy_static = "1.4.0"
 
 [dependencies]
@@ -27,4 +26,4 @@ url = "2.2.1"
 base64 = "0.13.0"
 hmac = "0.10.1"
 sha2 = "0.9.3"
-
+reqwest = "0.11.1"
