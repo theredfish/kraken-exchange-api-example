@@ -71,7 +71,7 @@ we can continue to improve it.
 
 ### Technical documentation
 
-[Available here](https://github.com/theredfish/stonk/tree/gh-pages)
+[Available here](http://www.juliandidier.fr/stonk)
 
 ### Approach
 
