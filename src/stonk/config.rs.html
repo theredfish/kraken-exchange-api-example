@@ -35,6 +35,11 @@
 <span id="32">32</span>
 <span id="33">33</span>
 <span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
 </pre><div class="example-wrap"><pre class="rust ">
 <span class="doccomment">//! Inject dotenv and env variables into the Config struct</span>
 <span class="doccomment">//!</span>
@@ -45,11 +50,16 @@
 
 <span class="kw">use</span> <span class="ident">dotenv</span>::<span class="ident">dotenv</span>;
 
+<span class="doccomment">/// The configuration loaded from the .env or system environment variables.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Deserialize</span>, <span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Config</span> {
+    <span class="doccomment">/// The base API url</span>
     <span class="kw">pub</span> <span class="ident">api_base_url</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// The public API key</span>
     <span class="kw">pub</span> <span class="ident">api_key</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// The private API key</span>
     <span class="kw">pub</span> <span class="ident">api_secret</span>: <span class="ident">String</span>,
+    <span class="doccomment">/// The one time password or 2FA password</span>
     <span class="kw">pub</span> <span class="ident">totp_pwd</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 }
 
