@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["AssetPair","Tradable asset pair"]]});
