@@ -44,8 +44,8 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ApiResult</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
     <span class="doccomment">/// array of error messages in the format of:</span>
-    <span class="doccomment">/// + &lt;char-severity code&gt;&lt;string-error category&gt;:&lt;string-error type&gt;[:&lt;string-extra info&gt;]</span>
-    <span class="doccomment">/// + severity code can be E for error or W for warning</span>
+    <span class="doccomment">/// * &lt;char-severity code&gt;&lt;string-error category&gt;:&lt;string-error type&gt;[:&lt;string-extra info&gt;]</span>
+    <span class="doccomment">/// * severity code can be E for error or W for warning</span>
     <span class="kw">pub</span> <span class="ident">error</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// result of API call (may not be present if errors occur)</span>
     <span class="kw">pub</span> <span class="ident">result</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,

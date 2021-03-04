@@ -129,16 +129,16 @@
     <span class="doccomment">/// triggered limit price (quote currency, when limit based order type triggered)</span>
     <span class="kw">pub</span> <span class="ident">limitprice</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
     <span class="doccomment">/// comma delimited list of miscellaneous info</span>
-    <span class="doccomment">/// + stopped = triggered by stop price</span>
-    <span class="doccomment">/// + touched = triggered by touch price</span>
-    <span class="doccomment">/// + liquidated = liquidation</span>
-    <span class="doccomment">/// + partial = partial fill</span>
+    <span class="doccomment">/// * stopped = triggered by stop price</span>
+    <span class="doccomment">/// * touched = triggered by touch price</span>
+    <span class="doccomment">/// * liquidated = liquidation</span>
+    <span class="doccomment">/// * partial = partial fill</span>
     <span class="kw">pub</span> <span class="ident">misc</span>: <span class="ident">String</span>,
     <span class="doccomment">/// comma delimited list of order flags</span>
-    <span class="doccomment">/// + viqc = volume in quote currency</span>
-    <span class="doccomment">/// + fcib = prefer fee in base currency (default if selling)</span>
-    <span class="doccomment">/// + fciq = prefer fee in quote currency (default if buying)</span>
-    <span class="doccomment">/// + nompp = no market price protection</span>
+    <span class="doccomment">/// * viqc = volume in quote currency</span>
+    <span class="doccomment">/// * fcib = prefer fee in base currency (default if selling)</span>
+    <span class="doccomment">/// * fciq = prefer fee in quote currency (default if buying)</span>
+    <span class="doccomment">/// * nompp = no market price protection</span>
     <span class="kw">pub</span> <span class="ident">oflags</span>: <span class="ident">String</span>,
 }
 
