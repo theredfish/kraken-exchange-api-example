@@ -6,6 +6,7 @@
 
 - [rustc 1.50.0+](https://www.rust-lang.org/fr/)
 - [Docker](https://www.docker.com/get-started)
+- Exchange account + pub/pvt API keys + 2FA password (totp)
 
 ## Quickstart
 
@@ -26,13 +27,41 @@
 
 - `cargo test --test bdd -- --debug`
   - `cargo test --test bdd` run the cucumber tests
-  - `-- --debug` will print on the standard output the different data asked in the subject.
+  - `-- --debug` will print on the standard output the reporting.
 
 ### Or run the cucumber tests with Docker
 
 The `Dockerfile` offers an easy way to execute your tests.
 
-- `docker-compose up --build`
+With Docker :
+
+- `docker build --no-cache -t bdd .`
+- `docker run --env-file .env bdd`
+
+/!\ Be careful Docker doesn't handle quotation marks in `.env` file, [they are part of the VAL](https://docs.docker.com/compose/env-file/) :
+
+> There is no special handling of quotation marks. This means that they are part of the VAL.
+
+With docker-compose :
+
+- `docker-compose up`
+
+### Endpoints under test
+
+- public
+  - Time : 1 api call
+  - AssetPairs : 3 different api calls with data driven. A bug may have been encountered, see [Other Notes](#other-notes) for more information
+- private
+  - OpenOrder : 1 api call
+
+This is the result you should expect, one test case fails. It's a good way to demonstrate how BDD tests can help to find bugs :
+
+```
+[Summary]
+3 features
+5 scenarios (1 failed, 4 passed)
+40 steps (1 failed, 19 passed)
+```
 
 ## About the project
 
@@ -41,14 +70,13 @@ we can continue to improve it.
 
 ### Approach
 
-This test project has been built with an end-to-end approach during an acceptance test phase. So, from a user perspective.
-Doing so involve developers, product owners, business, QA, ... and it's where a Gherkin language will the different
-stakeholders to discuss with a common language (ubiquitous language). It was one of the prerequisite of the test : using
-a Gherkin BDD framework. Here we use an implementation of [Cucumber testing framework for Rust](https://github.com/bbqsrc/cucumber-rust).
+This test project has been built with an end-to-end approach during an acceptance test phase. So, from a user perspective. This kind of approach generally involve developers, product owners, business, QA, ... it's where Gherkin help to bring a common language (ubiquitous language). Here we use an implementation of [Cucumber testing framework for Rust](https://github.com/bbqsrc/cucumber-rust).
 
-### Environment variables
+For this project I took a little bit more technical vocabulary where API endpoints are written in the Features. It allowed me to create generic and reusable Steps. This choice depends generally of the team, and should be discuss.
 
-Developers can rely on the `.env` file (not tracked by git). CI pipelines need to create **secret (understand encrypted)** environment variables for obvious security issues.
+### Environment variables to configure API access
+
+Developers can rely on the `.env` file (not tracked by git). Continuous integration pipelines need to configure **secret (understand encrypted)** environment variables for obvious security issues.
 
 - `API_BASE_URL` : The base URL to run tests against. This makes it easy to change the environment.
 - `API_KEY` : The public API key generated from the website.
@@ -58,40 +86,36 @@ Developers can rely on the `.env` file (not tracked by git). CI pipelines need t
 
 ### Code organization
 
-I tried to build this test project following a specific team organization where test teams maintain their projects separated from others.
+I tried to build this test project following a specific organization where test teams keep their projects separated from others.
 
-Please note that I'm talking about end to end / acceptance tests and not integration tests. But I took advantage of the way integration testing is handled by Cargo to run BDD tests, using a library as test support. Please read the next section [A better code organization](#a-better-code-organization) for more details.
+Please note that I implemented end-to-end / acceptance tests and not integration tests, but took advantage of the way integration testing is handled by Cargo to run BDD tests. Please read the next section [A better code organization](#a-better-code-organization) for more details.
 
-That's why this project is organized in two
+I also implemented a library to help me with API calls, cryptography, and to define the domain layer. That's why this project is organized in two
 parts :
 
-- [`src`](src) : this folder contains the source code of the library with the domain layer (ubiquitous language, entities) and the api helpers to call private and public methods. Doing so, we avoid to mix this logic in the tests and we can keep a separated code source for ease of maintenance. It can be seen as the testing tools to make the HTTP requests over the API. This folder should be mainly maintained by automation engineers / SDETS.
+- [`src`](src) : this folder contains the source code of the library with the domain layer (ubiquitous language, entities) and the api helpers to call the private and public methods. By doing this, we avoid mixing this logic in the tests and we can keep separate source code for easier maintenance. We can consider this library as a set of test tools to facilitate HTTP requests via the API. This library could mainly be maintained by automation engineers / SDETS.
 
-- [`tests`](tests) : this folder contains the features, using the Gherkin language, and the steps using the Cucumber framework.
-  This folder should be mainly maintained by product owners/testers (features), and automation engineers / SDETS (steps).
+- [`tests`](tests) : this folder contains the "Features", using the Gherkin language, and the "Steps" using the Cucumber framework.
+  This folder could mainly be maintained by product owners/testers (features), and automation engineers / SDETS (steps).
 
 Please note that I tried to provide an organizational context similar to that which can be found in a company. But it doesn't mean that every test projects shoud be organized in this way.
-
-The domain layer is be a very important part. While I created a specific layer in this project, an alternative method would
-be to use a specific crate with the different entities of the domain. This "domain crate" could therefore be shared between different teams in order to keep a very cohesive language and entity definitions accross
-projects (test projects or application projects).
 
 I have some experience with projects following the "Domain Driven Design" methodology. When I work on a project, I choose certain concepts of DDD, while keeping a good balance between the complexity of the code and the complexity of the business domain.
 
 ### A better code organization
 
-To improve the code distribution, the compilation time and the maintenance, a better code organization would have been to separate the library and release it as a separate crate.
+To improve code distribution, compilation time and maintenance, a better organization of the code would have been to separate the library and publish it as a separate crate.
 
-By doing that the test project can just import the library and use it to make http calls to private and public endpoints without extra compilation time when building the tests.
+By doing this the test project can simply import the library and use it to make http calls to private and public endpoints without additional compilation time while building the tests.
 
-**I therefore took a shortcut here, and took advantage of the way integration testing is handled by Cargo :**
+**I took a shortcut here, and took advantage of the way integration testing is handled by Cargo :**
 
 1. the library (and binary if available) are compiled
-2. the integration tests are compiled and run (they `use` the library)
+2. the integration tests are compiled and executed (they `use` the library)
 
-This saves me from creating separate crates for the library and the tests. It's easier to maintain, easier to deploy/run (no versionning), but with the added cost of build time.
+This saves me from creating separate crates for the library and the tests. It's easier to maintain, easier to deploy/run (no versioning), but with the added cost of build time.
 
-In real cases, using a workspace with a project for the library and one for the tests will help to maintain the code in the same place. The library could be versionned and imported in multiple test projects (from the same workspace or not, depending of the projects organization).
+Another solution would be to use a workspace with two separate projects for the library and the tests for better code maintenance. The library could therefore be versioned and imported into serveral test projects (from the same workspace or not, depending on the organization on the test projects).
 
 ### CI
 
@@ -102,8 +126,7 @@ different steps in general :
 - Cargo audit : Check the vulnerabilities on push and schedule a daily check on HEAD. Triggered when changes in `Cargo.toml`
   or `Cargo.lock` are made (this is where dependencies are defined).
 - Build and test : Try to build the library and run its unit tests. Try to build the BDD tests without running them.
-
-- TODO : Please note that another workflow could be added to run BDD tests manually from Github Actions (or schedule / trigger them).
+- A manual workflow to execute tests from Github Acttions
 
 ### Gherkin framework and reporting
 
@@ -111,19 +134,15 @@ For this project I used the open source BDD framework [cucumber-rust](https://gi
 
 > An implementation of the Cucumber testing framework for Rust. Fully native, no external test runners or dependencies.
 
-Common features of BDD frameworks are available, however it's a relatively new project and some are missing. For example there is no way to get a Junit output which is used by a lot of reporting tools and CI/CD.
-
-Due to the given time for this test project I can't implement this feature now but it could be the next step. Then it could be really easy to use [Allure Test Report](http://allure.qatools.ru/) or a test report to follow tests.
-
-For me it's a very important feature since it allows people to get insights about the tests, their history. Another idea would be to use the API of Xray (a Jira plugin) and maintain tests cases with a test repository. Also the test organization could be better with a such tool : Test Execution, Test Plan, Test Set, Test.
+Common features of BDD frameworks are available, but this is a relatively new project and some features are missing. For example, there is no Junit output, which is used by many reporting tools and CI/CD pipelines ([see issue](https://github.com/bbqsrc/cucumber-rust/issues/50)). Reporting is currently performed on standard output. The next step could be to listen to the different events of this Cucumber framework and create a report in the Junit format, and map the data into a report like [Allure Test Report](http://allure.qatools.ru/). Another idea would be to use the Xray's API (a Jira plugin) and maintain tests in a test repository. The test organization could be better with such a tool : Test Execution, Test Plan, Test Set, Test.
 
 ### Async/Await
 
-For this project I stick as much as possible with async/await from Rust. It enables asynchronous test and reduces the time of test execution. Depending on the amount of tests and the time to market objectives, asynchronous tests can really improve test pipelines.
+For this project I stuck with Rust's async/await as much as possible. It enables asynchronous testing and reduces test execution time. Depending on the number of tests and time to market, asynchronous testing can really improve test pipelines.
 
-One of the reason I decided to implement my own API tools is because there is no official API crate, and I didn't find any crate with a HTTP client using asynchronous requests. The other reason is because it's fun. Plus, I learned a lot about how you handle the crypto part and how your API works!
+One of the reasons I decided to implement my own API tools is because there is no official API crate, and I couldn't find any crate with a HTTP client using asynchronous requests. Plus, I learned a lot about how you handle the crypto part and how your API works!
 
-I chose [reqwest](https://github.com/seanmonstar/reqwest), and they explain the following thing in their documentation :
+I chose [reqwest](https://github.com/seanmonstar/reqwest) as my asynchronous http client. They explain the following thing in their documentation concerning the concurrent access :
 
 > You do not have to wrap the Client it in an Rc or Arc to reuse it, because it already uses an Arc internally.
 
@@ -136,11 +155,13 @@ Please find in this list the different tools et resources that help me to build 
 - [Json to Rust structures](https://transform.tools/json-to-rust-serde) : Turn json into Rust data structures deriving from serde
 - [Coinnect repo](https://github.com/hugues31/coinnect/blob/master/src/kraken/api.rs) : I studied their API and crypto functions.
 
-## Notes
+## Other Notes
 
 ### AssetPairs : a bug?
 
-A difference exists between data returned by `AssetPairs?pair=xbtusd&info=info`
-and data returned by `AssetPairs?pair=xbtusd&info=margin`.
+During my personal tests I found that a difference exists between data returned from `AssetPairs?pair=xbtusd&info=info`
+and data returned from `AssetPairs?pair=xbtusd&info=margin`.
 
-Indeed, in one case we have `margin_stop` and in the other case we have `margin_level`.
+Indeed, in one case we have `margin_stop` and in the other case we have `margin_level` (not documented on your website).
+
+See scenario "Retrieve margin information from an asset pair"

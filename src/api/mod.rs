@@ -1,3 +1,7 @@
+//! An API helper to execute private and public http requests.
+//!
+//! This API module handles cryptography, nonce, and asynchronous http requests.
+
 use hmac::{Hmac, Mac, NewMac};
 use reqwest::{
     header::{HeaderMap, HeaderValue},
@@ -13,17 +17,23 @@ use url::Url;
 mod errors;
 use errors::ApiError;
 
-// API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
-// See : https://www.kraken.com/features/api#general-usage
 pub struct Api {
+    /// The base API url
     base_url: String,
+    /// The public API key
     key: String,
+    /// The private API key
     secret: String,
+    /// The one time password or 2FA password
     totp: Option<String>,
+    /// A reusable asynchronous http client
     http_client: HttpClient,
 }
 
 impl Api {
+    /// Creates a new Api helper to use the Exchange endpoints.
+    /// totp information is optional because API keys are not all configured
+    /// with 2FA.
     pub fn new(base_url: String, key: String, secret: String, totp: Option<String>) -> Self {
         Api {
             base_url,
@@ -85,6 +95,8 @@ impl Api {
         Ok(nonce)
     }
 
+    /// API-Sign = Message signature using HMAC-SHA512 of (URI path + SHA256(nonce + POST data)) and base64 decoded secret API key
+    /// See : https://www.kraken.com/features/api#general-usage
     fn sign(&self, input: Vec<u8>) -> Result<String, ApiError> {
         type HmacSha512 = Hmac<Sha512>;
 
@@ -107,7 +119,7 @@ impl Api {
         [path.as_bytes(), &hashed].concat()
     }
 
-    // See : https://github.com/hugues31/coinnect/blob/master/src/helpers/mod.rs#L14
+    // Code source from Coinnect : https://github.com/hugues31/coinnect/blob/master/src/helpers/mod.rs#L14
     fn url_encode_hashmap(&self, hashmap: &HashMap<String, String>) -> String {
         if hashmap.is_empty() {
             return "".to_string();
