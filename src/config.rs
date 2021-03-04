@@ -4,8 +4,6 @@
 //!
 //! dotenv allows environment variables to be augmented/overwritten by a
 //! .env file.
-//!
-//! This file uses lazy_static to avoid multiple processing.
 
 use dotenv::dotenv;
 
