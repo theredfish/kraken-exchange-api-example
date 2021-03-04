@@ -53,7 +53,7 @@ With docker-compose :
   - Time : 1 api call
   - AssetPairs : 3 different api calls with data driven. A bug may have been encountered, see [Other Notes](#other-notes) for more information
 - private
-  - OpenOrder : 1 api call
+  - OpenOrders : 1 api call
 
 This is the result you should expect, one test case fails. It's a good way to demonstrate how BDD tests can help to find bugs :
 
