@@ -35,40 +35,31 @@ async fn check_error_response(test_ctx: &mut ApiContext) {
     );
 }
 
+/// Handle public or private http requests and extract data and status
+/// information for future processing.
 async fn handle_http_request(
     api: &Api,
     endpoint: String,
     data: HashMap<String, String>,
 ) -> HttpResponse {
-    if endpoint.contains("private") {
-        let res = api
+    let res = match endpoint {
+        endpoint if endpoint.contains("private") => api
             .private_call(&endpoint, data)
             .await
-            .unwrap_or_else(|_| panic!("Error during http request to private endpoint"));
-
-        let status = res.status().as_u16();
-
-        let data = res
-            .text()
-            .await
-            .unwrap_or_else(|_| panic!("Cannot retrieve http response body"));
-
-        return HttpResponse { status, data };
-    } else if endpoint.contains("public") {
-        let res = api
+            .unwrap_or_else(|_| panic!("Error during http request to private endpoint")),
+        endpoint if endpoint.contains("public") => api
             .public_call(&endpoint)
             .await
-            .unwrap_or_else(|_| panic!("Error during http request to public endpoint"));
+            .unwrap_or_else(|_| panic!("Error during http request to public endpoint")),
+        _ => panic!("Invalid endpoint. Private or public endpoint expected."),
+    };
 
-        let status = res.status().as_u16();
+    let status = res.status().as_u16();
 
-        let data = res
-            .text()
-            .await
-            .unwrap_or_else(|_| panic!("Cannot retrieve http response body"));
+    let data = res
+        .text()
+        .await
+        .unwrap_or_else(|_| panic!("Cannot retrieve http response body"));
 
-        return HttpResponse { status, data };
-    } else {
-        panic!("Private or public endpoint expected.");
-    }
+    HttpResponse { status, data }
 }

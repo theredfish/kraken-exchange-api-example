@@ -9,14 +9,15 @@ RUN groupadd ${APP_USER} \
 
 COPY . ${APP_DIR}
 RUN chown -R ${APP_USER}:${APP_USER} ${APP_DIR}
+
 USER ${APP_USER}
 WORKDIR ${APP_DIR}
 
-# First build step for caching dependencies in this layer. We build the tests
-# without launching them.
-RUN cargo test --no-run
+# Cache lib dependencies in this layer
+RUN cargo build
 
-# Run the integration tests with cucumber. Since we do not have unit / doc tests
-# it doesn't matter if we do not specify the test name. This is a default
-# command that can be easily override.
-CMD ["/usr/local/cargo/bin/cargo", "test"]
+# Cache dev dependencies in this layer
+RUN cargo test --test bdd --no-run
+
+# Run the integration tests with cucumber.
+CMD ["/usr/local/cargo/bin/cargo", "test", "--test", "bdd", "--", "--debug"]

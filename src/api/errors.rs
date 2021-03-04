@@ -4,6 +4,7 @@ use reqwest::Error as ReqwestError;
 use std::{fmt, time::SystemTimeError};
 use url::ParseError as UrlParseError;
 
+/// The different errors in relation with the API
 #[derive(Debug)]
 pub enum ApiError {
     NonceError,
