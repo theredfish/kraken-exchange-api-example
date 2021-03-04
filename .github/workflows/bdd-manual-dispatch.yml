@@ -1,0 +1,29 @@
+name: Manual BDD tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      args:
+        description: 'args passed to the test command.'     
+        required: false
+        default: '--test bdd -- --debug'
+env:
+  API_BASE_URL: ${{ secrets.API_BASE_URL }}
+  API_KEY: ${{ secrets.API_KEY }}
+  API_SECRET: ${{ secrets.API_SECRET }}
+  TOTP_PWD: ${{ secrets.TOTP_PWD }}
+
+jobs:
+  bdd:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    
+    - name: bdd test
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: ${{ github.event.inputs.args }}"
+      
