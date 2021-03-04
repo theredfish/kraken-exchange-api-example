@@ -37,16 +37,16 @@ pub struct OrderInfo {
     /// triggered limit price (quote currency, when limit based order type triggered)
     pub limitprice: Option<String>,
     /// comma delimited list of miscellaneous info
-    /// + stopped = triggered by stop price
-    /// + touched = triggered by touch price
-    /// + liquidated = liquidation
-    /// + partial = partial fill
+    /// * stopped = triggered by stop price
+    /// * touched = triggered by touch price
+    /// * liquidated = liquidation
+    /// * partial = partial fill
     pub misc: String,
     /// comma delimited list of order flags
-    /// + viqc = volume in quote currency
-    /// + fcib = prefer fee in base currency (default if selling)
-    /// + fciq = prefer fee in quote currency (default if buying)
-    /// + nompp = no market price protection
+    /// * viqc = volume in quote currency
+    /// * fcib = prefer fee in base currency (default if selling)
+    /// * fciq = prefer fee in quote currency (default if buying)
+    /// * nompp = no market price protection
     pub oflags: String,
 }
 

@@ -16,8 +16,8 @@ pub mod time;
 #[derive(Deserialize, Serialize, Debug)]
 pub struct ApiResult<T> {
     /// array of error messages in the format of:
-    /// + <char-severity code><string-error category>:<string-error type>[:<string-extra info>]
-    /// + severity code can be E for error or W for warning
+    /// * <char-severity code><string-error category>:<string-error type>[:<string-extra info>]
+    /// * severity code can be E for error or W for warning
     pub error: Vec<String>,
     /// result of API call (may not be present if errors occur)
     pub result: Option<T>,
