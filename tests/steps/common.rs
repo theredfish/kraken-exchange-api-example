@@ -2,9 +2,11 @@ use std::collections::HashMap;
 
 use crate::context::{ApiContext, HttpResponse};
 use cucumber_rust::{then, when};
+use serde_json::Value;
 use stonk::api::Api;
+use stonk::domain::ApiResult;
 
-#[when(regex = r#"^User make GET http request to "(.*)"$"#)]
+#[when(regex = r#"^a User make an http request to "(.*)"$"#)]
 async fn http_get(test_ctx: &mut ApiContext, endpoint: String) {
     let api = &test_ctx.api;
     test_ctx.response = handle_http_request(api, endpoint, HashMap::new()).await;
@@ -17,6 +19,19 @@ async fn http_response_ok(test_ctx: &mut ApiContext, status_code: u16) {
     assert_eq!(
         http_response.status, status_code,
         "Status code should be 200."
+    );
+}
+
+#[then("the response body does not contain any error")]
+async fn check_error_response(test_ctx: &mut ApiContext) {
+    let body = &test_ctx.response.data;
+
+    let res: ApiResult<Value> =
+        serde_json::from_str(&body).expect("Cannot deserialize the http body");
+
+    assert!(
+        res.error.is_empty(),
+        "The HTTP response shouldn't contain errors"
     );
 }
 
