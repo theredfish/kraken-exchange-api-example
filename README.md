@@ -126,7 +126,7 @@ different steps in general :
 - Cargo audit : Check the vulnerabilities on push and schedule a daily check on HEAD. Triggered when changes in `Cargo.toml`
   or `Cargo.lock` are made (this is where dependencies are defined).
 - Build and test : Try to build the library and run its unit tests. Try to build the BDD tests without running them.
-- A manual workflow to execute tests from Github Acttions
+- A manual workflow to execute tests from Github Actions. [See here](https://github.com/theredfish/stonk/actions/workflows/bdd-manual-dispatch.yml)
 
 ### Gherkin framework and reporting
 
