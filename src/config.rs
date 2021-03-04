@@ -7,11 +7,16 @@
 
 use dotenv::dotenv;
 
+/// The configuration loaded from the .env or system environment variables.
 #[derive(Clone, Deserialize, Debug, PartialEq)]
 pub struct Config {
+    /// The base API url
     pub api_base_url: String,
+    /// The public API key
     pub api_key: String,
+    /// The private API key
     pub api_secret: String,
+    /// The one time password or 2FA password
     pub totp_pwd: Option<String>,
 }
 
