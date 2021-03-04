@@ -58,20 +58,40 @@ Developers can rely on the `.env` file (not tracked by git). CI pipelines need t
 
 ### Code organization
 
-I tried to build this test project following a specific team organization where test teams maintain their projects. We
-are talking about end to end / acceptance tests and not integration tests. That's why this project is organized in two
+I tried to build this test project following a specific team organization where test teams maintain their projects separated from others.
+
+Please note that I'm talking about end to end / acceptance tests and not integration tests. But I took advantage of the way integration testing is handled by Cargo to run BDD tests, using a library as test support. Please read the next section [A better code organization](#a-better-code-organization) for more details.
+
+That's why this project is organized in two
 parts :
 
-- [`src`](src) : this folder contains the source code of the library with the domain layer (ubiquitous language, entities) and api helpers to call private and public methods. Doing so, we avoid to mix this logic in the tests and we can keep a separated code source for ease of maintenance. It can be seen as the testing tools to make the HTTP requests over the API. This folder could be mainly maintained by automation engineers / SDETS.
+- [`src`](src) : this folder contains the source code of the library with the domain layer (ubiquitous language, entities) and the api helpers to call private and public methods. Doing so, we avoid to mix this logic in the tests and we can keep a separated code source for ease of maintenance. It can be seen as the testing tools to make the HTTP requests over the API. This folder should be mainly maintained by automation engineers / SDETS.
 
 - [`tests`](tests) : this folder contains the features, using the Gherkin language, and the steps using the Cucumber framework.
-  This folder could be mainly maintained by product owners (features), testers, automation engineers / SDETS.
+  This folder should be mainly maintained by product owners/testers (features), and automation engineers / SDETS (steps).
 
-Please note that I tried to bring some context in this test project. But it doesn't mean that every test projects shoud be organized in this way.
+Please note that I tried to provide an organizational context similar to that which can be found in a company. But it doesn't mean that every test projects shoud be organized in this way.
 
-The domain layer can be a very important part. While I created a specific layer in this project, an alternative method would
-be to use a specific crate with the different entities of the domain. This "domain crate" could therefore be shared between different teams in order to keep a very cohesive language and entities definitions accross
+The domain layer is be a very important part. While I created a specific layer in this project, an alternative method would
+be to use a specific crate with the different entities of the domain. This "domain crate" could therefore be shared between different teams in order to keep a very cohesive language and entity definitions accross
 projects (test projects or application projects).
+
+I have some experience with projects following the "Domain Driven Design" methodology. When I work on a project, I choose certain concepts of DDD, while keeping a good balance between the complexity of the code and the complexity of the business domain.
+
+### A better code organization
+
+To improve the code distribution, the compilation time and the maintenance, a better code organization would have been to separate the library and release it as a separate crate.
+
+By doing that the test project can just import the library and use it to make http calls to private and public endpoints without extra compilation time when building the tests.
+
+**I therefore took a shortcut here, and took advantage of the way integration testing is handled by Cargo :**
+
+1. the library (and binary if available) are compiled
+2. the integration tests are compiled and run (they `use` the library)
+
+This saves me from creating separate crates for the library and the tests. It's easier to maintain, easier to deploy/run (no versionning), but with the added cost of build time.
+
+In real cases, using a workspace with a project for the library and one for the tests will help to maintain the code in the same place. The library could be versionned and imported in multiple test projects (from the same workspace or not, depending of the projects organization).
 
 ### CI
 
@@ -99,9 +119,9 @@ For me it's a very important feature since it allows people to get insights abou
 
 ### Async/Await
 
-For this project stick as much as possible with async/await from Rust. It enables asynchronous test and reduces the time of test execution. Depending on the amount of tests and the time to market objectives, asynchronous tests can really improve test pipelines.
+For this project I stick as much as possible with async/await from Rust. It enables asynchronous test and reduces the time of test execution. Depending on the amount of tests and the time to market objectives, asynchronous tests can really improve test pipelines.
 
-One of the reason I decided to implement my own API tools is because there is no official API crate, and I didn't find any crate with a HTTP client using asynchronous requests.
+One of the reason I decided to implement my own API tools is because there is no official API crate, and I didn't find any crate with a HTTP client using asynchronous requests. The other reason is because it's fun. Plus, I learned a lot about how you handle the crypto part and how your API works!
 
 I chose [reqwest](https://github.com/seanmonstar/reqwest), and they explain the following thing in their documentation :
 

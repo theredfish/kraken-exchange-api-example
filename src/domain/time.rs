@@ -1,16 +1,8 @@
-//! The domain definition for Time.
-use serde::Deserialize;
-
-/// A structure that represents the server time.
-#[derive(Debug, Deserialize)]
+/// Server's time.
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Time {
+    /// as unix timestamp
     pub unixtime: usize,
+    /// as RFC 1123 time format
     pub rfc1123: String,
-}
-
-/// A structure that represents the http response returned by the endpoint.
-#[derive(Debug, Deserialize)]
-pub struct TimeResponse {
-    pub error: Vec<::serde_json::Value>,
-    pub result: Time,
 }
