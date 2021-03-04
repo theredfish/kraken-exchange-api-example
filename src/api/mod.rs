@@ -48,6 +48,9 @@ impl Api {
         }
     }
 
+    /// Creates a public http request where cryptography and API/TOTP information
+    /// are not necessary. Http requests on public endpoints are necessarily made
+    /// with the GET method.
     pub async fn public_call(&self, path: &str) -> Result<HttpResponse, ApiError> {
         let url = build_url(&self.base_url, path)?.to_string();
         let response = self.http_client.request(Method::GET, &url).send().await?;
@@ -55,6 +58,9 @@ impl Api {
         Ok(response)
     }
 
+    /// Creates a private http request that handles cryptorgraphy and API/TOTP
+    /// information. Http requests on private endpoints are necessarily made with
+    /// the POST method.
     pub async fn private_call(
         &self,
         path: &str,

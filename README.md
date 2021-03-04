@@ -20,6 +20,7 @@
   - Tick the `Query Open Orders & Trades` permission
   - If you want setup a key expiration date
   - Configure the 2FA settings for the API key and change the method to password
+  - In order to avoid nonce errors for very quick successions in order, set your nonce windows to 5000
   - Report the value of your password in your `.env` for the key `TOTP_PWD`
   - For better results create new orders / trades on this account
 
@@ -67,6 +68,10 @@ This is the result you should expect, one test case fails. It's a good way to de
 
 In this section I explain my decisions, the current state of the work and how
 we can continue to improve it.
+
+### Technical documentation
+
+[Available here](https://github.com/theredfish/stonk/tree/gh-pages)
 
 ### Approach
 
