@@ -41,45 +41,34 @@ async fn handle_http_request(
     data: HashMap<String, String>,
 ) -> HttpResponse {
     if endpoint.contains("private") {
-        let res = api.private_call(&endpoint, data).await.unwrap_or_else(|_| {
-            panic!(format!(
-                "Error during http request to private endpoint {}",
-                endpoint
-            ))
-        });
+        let res = api
+            .private_call(&endpoint, data)
+            .await
+            .unwrap_or_else(|_| panic!("Error during http request to private endpoint"));
 
         let status = res.status().as_u16();
 
-        let data = res.text().await.unwrap_or_else(|_| {
-            panic!(format!(
-                "Cannot retrieve http response body for the endpoint {}",
-                endpoint
-            ))
-        });
+        let data = res
+            .text()
+            .await
+            .unwrap_or_else(|_| panic!("Cannot retrieve http response body"));
 
         return HttpResponse { status, data };
     } else if endpoint.contains("public") {
-        let res = api.public_call(&endpoint).await.unwrap_or_else(|_| {
-            panic!(format!(
-                "Error during http request to public endpoint {}",
-                endpoint
-            ))
-        });
+        let res = api
+            .public_call(&endpoint)
+            .await
+            .unwrap_or_else(|_| panic!("Error during http request to public endpoint"));
 
         let status = res.status().as_u16();
 
-        let data = res.text().await.unwrap_or_else(|_| {
-            panic!(format!(
-                "Cannot retrieve http response body for the endpoint {}",
-                endpoint
-            ))
-        });
+        let data = res
+            .text()
+            .await
+            .unwrap_or_else(|_| panic!("Cannot retrieve http response body"));
 
         return HttpResponse { status, data };
     } else {
-        panic!(format!(
-            "Private or public endpoint expected. Found : {}",
-            endpoint
-        ));
+        panic!("Private or public endpoint expected.");
     }
 }
